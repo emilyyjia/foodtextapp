@@ -16,6 +16,6 @@ const GetFood = () => {
             </row>
         </CenterContainer>
     );
-  };
-  
-  export default GetFood;
+};
+
+export default GetFood;
