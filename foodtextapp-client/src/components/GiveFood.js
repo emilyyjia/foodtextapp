@@ -18,7 +18,7 @@ const StyledForm = styled(Form)`
     border-radius: 20px;
     padding: 5%;
     width: 100%;
-`
+`;
 //font-family: "Roboto", sans-serif; 
 const StyledLabel = styled(Form.Label)`
     color: #6885EB; 
@@ -26,10 +26,10 @@ const StyledLabel = styled(Form.Label)`
     font-size: 22px;
     font-weight: normal;
     margin-top: 15px;
-`
+`;
 const Row = styled.div`
     width: 45%; 
-`
+`;
 const TopCommand = styled.div`
     color: #B4CDA1; 
     font-family: "Roboto", sans-serif; 
@@ -39,7 +39,7 @@ const TopCommand = styled.div`
     margin-bottom: 15px;
     text-align: center;
     width: 80%;
-`
+`;
 
 const Submit = styled.button`
     border: 0px;
@@ -75,7 +75,7 @@ const Submit = styled.button`
     &:focus{
         outline: none;
     }
-`
+`;
 
 const Option = styled.option`
 
@@ -99,7 +99,7 @@ const GiveFood = () => {
     }
 
     if (isFormComplete) {
-        return <Redirect to={'/thanks'} />;
+        return <Redirect to={'/thanksGive'} />;
     }
 
     return (
