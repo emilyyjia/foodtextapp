@@ -5,12 +5,13 @@ import main
 app = Flask(__name__)
 
 @app.route('/sms', methods=['POST'])  #fix this?
-def sms:
+def sms():
     number = request.form['From']
     message_body = request.form['Body']
 
     if message_body == 'Y' or message_body == 'y':
-        
+        ## maybe should be N, n instead for no response
+        ## do something here???
 
     return None
 
