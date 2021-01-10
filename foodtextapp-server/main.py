@@ -1,6 +1,7 @@
 import os
 from twilio.rest import Client
 from google.cloud import firestore
+import datetime
 
 # Account Sid and Auth Token from twilio.com/console
 # Set as enviroment variables, See http://twil.io/secure
@@ -20,15 +21,19 @@ db = firestore.Client()
 
 
 def want_sign_up(item_type, city, name, phone):
+
     doc_ref = db.collection(u'people').document(phone)
-    doc_ref.set({
-        u'name': name,
-        u'item_type': item_type,
-        u'city': city,
-        u'phone': phone,
-        u'lastserved': datetime.datetime.now(),
-        u'replied': 0
-    }, merge=True)  # 0 for replied with no, or not at all; 1 for replied with yes
+
+    doc = doc_ref.get()
+    if doc.exists:
+        doc_ref.set({
+            u'name': name,
+            u'item_type': item_type,
+            u'city': city,
+            u'phone': phone,
+            u'lastserved': datetime.datetime.now(),
+            u'replied': 0
+        }, merge=True)  # 0 for replied with no, or not at all; 1 for replied with yes
 
     return True
 
@@ -39,9 +44,13 @@ def sortfun(person):
     return person['lastserved']
 
 
+queue = []
+
+
 def food_available(name, item, item_type, city, quantity, location, time, desc):
     success = True
-
+    queue = []
+    queue_size = quantity
     docs = db.collection(u'people').where(
         u'item_type', '==', item_type).where(u'city', '==', city).stream()
     for doc in docs:
@@ -57,7 +66,7 @@ def food_available(name, item, item_type, city, quantity, location, time, desc):
 
     for i in range(queue_size):
         person = queue[i]
-        text = "Hey {}! {} has a surplus of {}. There are {} available at {} at {}.\nHere's what else they have to say: \"{}\"".format(
+        text = "Hey {}! {} has a surplus of {}. There are {} available at {} at {}.\n Here's what else they have to say: \"{}\"".format(
             person['name'], name, item, quantity, location, time, desc)
         print(text)
         if send_text(text, person['phone']):
