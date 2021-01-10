@@ -4,6 +4,8 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { Redirect } from 'react-router-dom';
 
+
+
 const CenterContainer = styled.div`
     align-items: center;
     display: flex;
@@ -74,13 +76,44 @@ const Submit = styled.button`
     }
 `;
 
+const Warn = styled(Form.Text)`
+    color: #FF8B8B;
+`
+
 const GetFood = () => {
     const [name, setName] = useState("");
     const [phoneNumber, setphoneNumber] = useState("");
     const [location, setLocation] = useState("");
-    const [isFormComplete, setFormComplete] = useState(false);
 
-    const createGetFoodUser = () => {
+    const [isFormComplete, setFormComplete] = useState(false);
+    const [triedSubmitting, setTriedSubmitting] = useState(false);
+    const [isPhoneNumberGood, setPhoneNumber] = useState(true);
+
+    const hasEmptyField = () => {
+        return name === "" || phoneNumber === "" || location === "";
+    }
+
+    const badPhoneNumber = () => {
+        return phoneNumber === "" || phoneNumber.length != 10 || isNaN(phoneNumber);
+    }
+
+    const createGetFoodUser = (event) => {
+        if (hasEmptyField()) {
+            event.preventDefault();
+            event.stopPropagation();
+            setFormComplete(false);
+            setTriedSubmitting(true);
+            setPhoneNumber(true);
+            return;
+        }
+        if(badPhoneNumber()){
+            event.preventDefault();
+            event.stopPropagation();
+            setPhoneNumber(false);
+            setFormComplete(false);
+            setTriedSubmitting(true);
+            return;
+        }
         console.log(name);
         console.log(phoneNumber);
         console.log(location);
@@ -100,7 +133,11 @@ const GetFood = () => {
             </TopCommand>
             <Row>
                 <StyledForm> 
-
+                    {triedSubmitting &&
+                        <Warn>
+                            One or more fields are empty.
+                        </Warn>
+                    }
                     <Form.Group controlId="form.desc">
                         <StyledLabel>
                             First &amp; Last Name
@@ -113,6 +150,11 @@ const GetFood = () => {
                             Phone Number
                         </StyledLabel>
                         <Form.Control onChange={e => setphoneNumber(e.target.value)} value={phoneNumber}></Form.Control>
+                        {isPhoneNumberGood === false &&
+                            <Warn>
+                                Please enter your 10-digit phone number with only numbers.
+                            </Warn>
+                        }
                     </Form.Group>
 
                     <Form.Group controlId="form.location">
