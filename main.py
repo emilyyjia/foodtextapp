@@ -31,8 +31,7 @@ def want_sign_up(item_type, city, name, phone):
         u'item_type': item_type,
         u'city': city,
         u'phone': phone
-        u'datetime' : datetime.datetime.now()       
-        }, merge = True)
+        u'datetime' : datetime.datetime.now()}, merge = True)
     else:
         doc_ref.set({
             u'name': name,
@@ -40,8 +39,9 @@ def want_sign_up(item_type, city, name, phone):
             u'city': city,
             u'phone': phone
             u'datetime' : datetime.datetime.now() 
-            u'lastserved': None     
-        })
+            u'lastserved': None
+            u'replied': 0}) #0 for replied with no, or not at all; 1 for replied with yes
+            
 
     return True
 
@@ -49,6 +49,7 @@ def want_sign_up(item_type, city, name, phone):
 def sortfun(person):
     return person['lastserved']
 
+queue = []
 def food_available(name, item, item_type, city, quantity, location, time, desc):
     success = True
     queue = []
