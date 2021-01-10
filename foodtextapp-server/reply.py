@@ -9,9 +9,8 @@ def sms():
     number = request.form['From']
     message_body = request.form['Body']
 
-    if message_body == 'Y' or message_body == 'y':
-        ## maybe should be N, n instead for no response
-        ## do something here???
+    if message_body == 'N' or message_body == 'n':
+        nextinline(number)
 
     return None
 
