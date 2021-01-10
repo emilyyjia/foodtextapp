@@ -1,6 +1,7 @@
 import os
 from twilio.rest import Client
 from google.cloud import firestore
+import datetime
 
 # Account Sid and Auth Token from twilio.com/console
 # Set as enviroment variables, See http://twil.io/secure
@@ -20,16 +21,33 @@ db = firestore.Client()
 
 
 def want_sign_up(item_type, city, name, phone):
+    
     doc_ref = db.collection(u'people').document(phone)
-    doc_ref.set({
+
+    doc = doc_ref.get()
+    if doc.exists:
+        doc_ref.set({
         u'name': name,
         u'item_type': item_type,
         u'city': city,
         u'phone': phone
-    })
+        u'datetime' : datetime.datetime.now()       
+        }, merge = True)
+    else:
+        doc_ref.set({
+            u'name': name,
+            u'item_type': item_type,
+            u'city': city,
+            u'phone': phone
+            u'datetime' : datetime.datetime.now() 
+            u'lastserved': None     
+        })
 
     return True
 
+#sorting function
+def sortfun(person):
+    return person['lastserved']
 
 def food_available(name, item, item_type, city, quantity, location, time, desc):
     success = True
@@ -39,17 +57,33 @@ def food_available(name, item, item_type, city, quantity, location, time, desc):
         u'item_type', '==', item_type).where(u'city', '==', city).stream()
     for doc in docs:
         person = doc.to_dict()
-        if len(queue) <= queue_size:
-            queue.append(person)
-        else:
-            break
+##        if len(queue) <= queue_size:
+##            queue.append(person)
+##        else:
+##            break
 
-    for person in queue:
+        queue.append(person)
+
+    queue.sort(key = sortfun)
+
+    for i in range(queue_size):
+        person = queue[i]
         text = "Hey {}! {} has a surplus of {}. There are {} available at {} at {}.\n Here's what else they have to say: \"{}\"".format(
             person['name'], name, item, quantity, location, time, desc)
         print(text)
-        if not send_text(text, person['phone']):
+        if send_text(text, person['phone']):
+            db.collection(u'people').document(person['name']).set({u'lastserved' : datetime.datetime.now()} , merge = True) #move this to after replying mechanism figured out
+        else:
             success = False
+
+##    for person in queue:
+##        text = "Hey {}! {} has a surplus of {}. There are {} available at {} at {}.\n Here's what else they have to say: \"{}\"".format(
+##            person['name'], name, item, quantity, location, time, desc)
+##        print(text)
+##        if send_text(text, person['phone']):
+##            db.collection(u'people').document(person['name']).set({u'lastserved' : datetime.datetime.now()} , merge = True) #move this to after replying mechanism figured out
+##        else:
+##            success = False
 
     return success
 
