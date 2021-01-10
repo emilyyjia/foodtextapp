@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 
 import Button from 'react-bootstrap/Button';
 import DateRangePicker from 'react-bootstrap-daterangepicker';
 import Form from 'react-bootstrap/Form';
+import { Redirect } from 'react-router-dom';
 
 const CenterContainer = styled.div`
     align-items: center;
@@ -13,6 +14,9 @@ const CenterContainer = styled.div`
 `;
 
 const StyledForm = styled(Form)`
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    padding: 5%;
     width: 100%;
 `
 const StyledLabel = styled(Form.Label)`
@@ -71,13 +75,28 @@ const Submit = styled.button`
     }
 `
 const GiveFood = () => {
+    const [description, setDescription] = useState("");
+    const [isFormComplete, setFormComplete] = useState(false);
+
+
+    const submitForm = () => {
+        console.log(description);
+        // TODO: call API here
+
+        setFormComplete(true);
+    }
+
+    if (isFormComplete) {
+        return <Redirect to={'/thanks'} />;
+    }
+
     return (
         <CenterContainer>
              <TopCommand>
                 Please enter your information below:
             </TopCommand>
             <Row>
-                <StyledForm>
+                <StyledForm> 
                     <Form.Group controlId="form.type">
                         <StyledLabel>
                             Item Type
@@ -89,7 +108,7 @@ const GiveFood = () => {
                         <StyledLabel>
                             Item Description
                         </StyledLabel>
-                        <Form.Control as='textarea'></Form.Control>
+                        <Form.Control as='textarea' onChange={e => setDescription(e.target.value)} value={description}></Form.Control>
                     </Form.Group>
                     
                     <Form.Group controlId="form.quantity">
@@ -113,7 +132,7 @@ const GiveFood = () => {
                         </StyledLabel>
                         <Form.Control as='textarea'></Form.Control>
                     </Form.Group>
-                    <Submit>
+                    <Submit type="submit" onClick={submitForm}>
                         Submit
                     </Submit>
                 </StyledForm>
