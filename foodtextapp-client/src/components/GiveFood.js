@@ -98,7 +98,7 @@ const GiveFood = () => {
         return itemType === "" || itemType === "Select" || description === "" || time === "" || location === "";
     }
 
-    const submitForm = (event) => {
+    const submitForm = async (event) => {
         if (hasEmptyField()) {
             event.preventDefault();
             event.stopPropagation();
@@ -106,7 +106,37 @@ const GiveFood = () => {
             setTriedSubmitting(true);
             return;
         }
-        // TODO: call API here
+        // TODO: clean this up
+        const apiUrl = process.env.REACT_APP_API_URL;
+        console.log(apiUrl);
+
+        const data = {
+            name: '', // TODO add
+            item: '', // TODO add
+            item_type: itemType,
+            quantity: quantity, 
+            location: location, // TODO make neighbourhood
+            time: time,
+            description: description,
+        }
+
+        let formData = new FormData();
+        for (const key in data) {
+            console.log(key)
+            formData.append(key, data[key]);
+        }
+        console.log(data);
+        console.log(formData);
+        fetch(`${apiUrl}/sharefood` , {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: formData
+        });
+        event.preventDefault();
+        event.stopPropagation();
 
         setFormComplete(true);
     }
