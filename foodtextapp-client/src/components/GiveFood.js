@@ -1,8 +1,7 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 
-import Button from 'react-bootstrap/Button';
-import DateRangePicker from 'react-bootstrap-daterangepicker';
+import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker'; // TODO: fix styling for picker
 import Form from 'react-bootstrap/Form';
 import { Redirect } from 'react-router-dom';
 
@@ -80,19 +79,33 @@ const Submit = styled.button`
 const Option = styled.option`
 
 `
+
+const Warn = styled(Form.Text)`
+    color: #FF8B8B;
+`
+
 const GiveFood = () => {
+    const [itemType, setItemType] = useState("");
     const [description, setDescription] = useState("");
-    const [type, setType] = useState("");
+    const [quantity, setQuantity] = useState(0);
     const [time, setTime] = useState("");
     const [location, setLocation] = useState("");
+
     const [isFormComplete, setFormComplete] = useState(false);
+    const [triedSubmitting, setTriedSubmitting] = useState(false);
 
+    const hasEmptyField = () => {
+        return itemType === "" || itemType === "Select" || description === "" || time === "" || location === "";
+    }
 
-    const submitForm = () => {
-        console.log(description);
-        console.log(type);
-        console.log(time);
-        console.log(location);
+    const submitForm = (event) => {
+        if (hasEmptyField()) {
+            event.preventDefault();
+            event.stopPropagation();
+            setFormComplete(false);
+            setTriedSubmitting(true);
+            return;
+        }
         // TODO: call API here
 
         setFormComplete(true);
@@ -108,18 +121,29 @@ const GiveFood = () => {
                 Please enter your information below
             </TopCommand>
             <Row>
-                <StyledForm> 
+                <StyledForm>
+                    {triedSubmitting &&
+                        <Warn>
+                            One or more fields are empty.
+                        </Warn>
+                    }
                     <Form.Group controlId="form.type">
                         <StyledLabel>
                             Item Type
                         </StyledLabel>
-                        <Form.Control as='select' onChange={e => setType(e.target.value)} value={type}>
+                        <Form.Control as='select' onChange={e => setItemType(e.target.value)} required value={itemType}>
                             <Option>Select</Option>
                             <Option>Ready/Hot Food</Option>
                             <Option>Storable Food</Option>
                             <Option>Clothing</Option>
                             <Option>Daily Use Items</Option>
                         </Form.Control>
+                        {(itemType === "" || itemType === "Select") &&
+                            <Warn>
+                                Please select the type of item.
+                            </Warn>
+                        }
+                        
                     </Form.Group>
 
                     <Form.Group controlId="form.desc">
@@ -133,16 +157,19 @@ const GiveFood = () => {
                         <StyledLabel>
                             Item Quantity
                         </StyledLabel>
-                        <Form.Control></Form.Control>
+                        <Form.Control onChange={e => setQuantity(e.target.value)} type="number" value={quantity}></Form.Control>
                     </Form.Group>
 
                     <Form.Group controlId="form.date">
                         <StyledLabel>
                             Pick-up Date &amp; Time
                         </StyledLabel>
-                        <DateRangePicker initialSettings={{ startDate: '1/1/2021', endDate: '3/1/2021' }}>
-                            <Form.Control onChange={e => setTime(e.target.value)} value={time}></Form.Control>
-                        </DateRangePicker>
+                        <DateTimeRangePicker
+                            disableClock={true}
+                            format="y-MM-dd h:mm a"
+                            onChange={setTime}
+                            value={time}
+                        />
                     </Form.Group>
                     <Form.Group controlId="form.location">
                         <StyledLabel>
@@ -150,7 +177,7 @@ const GiveFood = () => {
                         </StyledLabel>
                         <Form.Control as='textarea' onChange={e => setLocation(e.target.value)} value={location}></Form.Control>
                     </Form.Group>
-                    <Submit type="submit" onClick={submitForm}>
+                    <Submit onClick={submitForm} type="submit">
                         Submit
                     </Submit>
                 </StyledForm>
