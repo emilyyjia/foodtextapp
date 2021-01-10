@@ -41,7 +41,7 @@ def share_food():
         name = get_field(data, 'name')
         item = get_field(data, 'item')
         item_type = get_field(data, 'item_type')
-        city = get_field(data, 'city')
+        city = get_field(data, 'neighbourhood')
         quantity = int(get_field(data, 'quantity'))
         location = get_field(data, 'location')
         time = get_field(data, 'time')
