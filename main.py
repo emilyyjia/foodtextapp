@@ -20,18 +20,14 @@ db = firestore.Client()
 def want_sign_up(item_type, city, name, phone):
 
     doc_ref = db.collection(u'people').document(phone)
-
-    doc = doc_ref.get()
-    if doc.exists:
-        doc_ref.set({
-            u'name': name,
-            u'item_type': item_type,
-            u'city': city,
-            u'phone': phone,
-            u'lastserved': datetime.datetime.now(),
-            u'replied': 0
-        }, merge=True)  # 0 for replied with no, or not at all; 1 for replied with yes
-
+    doc_ref.set({
+        u'name': name,
+        u'item_type': item_type,
+        u'city': city,
+        u'phone': phone,
+        u'lastserved': datetime.datetime.now(),
+        u'replied': 0
+    }, merge=True)  # 0 for replied with no, or not at all; 1 for replied with yes
     return True
 
 # sorting function
@@ -47,21 +43,16 @@ def food_available(name, item, item_type, city, quantity, location, time, desc =
         u'item_type', '==', item_type).where(u'city', '==', city).stream()
     for doc in docs:
         person = doc.to_dict()
-# if len(queue) <= queue_size:
-# queue.append(person)
-# else:
-# break
-
         queue.append(person)
 
     queue.sort(key=sortfun)
 
-    for i in range(queue_size):
+    for i in range(min(len(queue), queue_size)):
         person = queue[i]
         text = "Hey {}! {} has a surplus of {}. There are {} available at {} at {}.".format(
             person['name'], name, item, quantity, location, time)
         if desc != "":
-            description = "\n Here's what else they have to say: \"{}\"".format(desc)
+            description = "\nHere's what else they have to say: \"{}\"".format(desc)
             text += description
 
         print(text)
@@ -89,7 +80,7 @@ def send_text(text, phone):
     message = client.messages \
                     .create(
                         body=text,
-                        from_='+16043322049',
+                        messaging_service_sid='MG34b3e43144811f4f6f5948979001c6e5',
                         to=phone
                     )
 
