@@ -33,11 +33,18 @@ def want_sign_up(item_type, city, name, phone):
 
 def food_available(name, item, item_type, city, quantity, location, time, desc):
     success = True
-
+    queue = []
+    queue_size = quantity
     docs = db.collection(u'people').where(
         u'item_type', '==', item_type).where(u'city', '==', city).stream()
     for doc in docs:
         person = doc.to_dict()
+        if len(queue) <= queue_size:
+            queue.append(person)
+        else:
+            break
+
+    for person in queue:
         text = "Hey {}! {} has a surplus of {}. There are {} available at {} at {}.\n Here's what else they have to say: \"{}\"".format(
             person['name'], name, item, quantity, location, time, desc)
         print(text)
