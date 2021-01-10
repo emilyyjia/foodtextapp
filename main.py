@@ -15,10 +15,7 @@ import datetime
 
 account_sid = os.environ['TWILIO_ACCOUNT_SID']
 auth_token = os.environ['TWILIO_AUTH_TOKEN']
-# everyone = {}  # key: item_type, value: array of persons
-
 db = firestore.Client()
-
 
 def want_sign_up(item_type, city, name, phone):
 
@@ -38,16 +35,11 @@ def want_sign_up(item_type, city, name, phone):
     return True
 
 # sorting function
-
-
 def sortfun(person):
     return person['lastserved']
 
 
-queue = []
-
-
-def food_available(name, item, item_type, city, quantity, location, time, desc):
+def food_available(name, item, item_type, city, quantity, location, time, desc = ""):
     success = True
     queue = []
     queue_size = quantity
@@ -66,8 +58,12 @@ def food_available(name, item, item_type, city, quantity, location, time, desc):
 
     for i in range(queue_size):
         person = queue[i]
-        text = "Hey {}! {} has a surplus of {}. There are {} available at {} at {}.\n Here's what else they have to say: \"{}\"".format(
-            person['name'], name, item, quantity, location, time, desc)
+        text = "Hey {}! {} has a surplus of {}. There are {} available at {} at {}.".format(
+            person['name'], name, item, quantity, location, time)
+        if desc != "":
+            description = "\n Here's what else they have to say: \"{}\"".format(desc)
+            text += description
+
         print(text)
         if send_text(text, person['phone']):
             db.collection(u'people').document(person['name']).set({u'lastserved': datetime.datetime.now(
