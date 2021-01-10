@@ -1,41 +1,48 @@
 import os
 from twilio.rest import Client
-
+from google.cloud import firestore
 
 # Account Sid and Auth Token from twilio.com/console
 # Set as enviroment variables, See http://twil.io/secure
 
-class Person(object):
-    def __init__(self, name, phone):
-        self.name = name
-        self.phone = phone
+
+# class Person(object):
+#     def __init__(self, name, phone):
+#         self.name = name
+#         self.phone = phone
 
 
 account_sid = os.environ['TWILIO_ACCOUNT_SID']
 auth_token = os.environ['TWILIO_AUTH_TOKEN']
-everyone = {}  # key: item_type, value: array of persons
+# everyone = {}  # key: item_type, value: array of persons
+
+db = firestore.Client()
 
 
-def want_sign_up(item_type, name, phone):
-    person = Person(name, phone)
-    if item_type in everyone:
-        everyone[item_type].append(person)
-    else:
-        print("here also")
-        everyone[item_type] = [person]
+def want_sign_up(item_type, city, name, phone):
+    doc_ref = db.collection(u'people').document(phone)
+    doc_ref.set({
+        u'name': name,
+        u'item_type': item_type,
+        u'city': city,
+        u'phone': phone
+    })
+
     return True
 
 
-def food_available(name, item, item_type, quantity, location, time, desc):
+def food_available(name, item, item_type, city, quantity, location, time, desc):
     success = True
-    print(everyone)
-    if item_type in everyone:
-        for person in everyone[item_type]:
-            text = "Hey {}! {} has a surplus of {}. There are {} available at {} at {}.\n Here's what else they have to say: \"{}\"".format(
-                person.name, name, item, quantity, location, time, desc)
-            print(text)
-            if not send_text(text, person.phone):
-                success = False
+
+    docs = db.collection(u'people').where(
+        u'item_type', '==', item_type).where(u'city', '==', city).stream()
+    for doc in docs:
+        person = doc.to_dict()
+        text = "Hey {}! {} has a surplus of {}. There are {} available at {} at {}.\n Here's what else they have to say: \"{}\"".format(
+            person['name'], name, item, quantity, location, time, desc)
+        print(text)
+        if not send_text(text, person['phone']):
+            success = False
 
     return success
 

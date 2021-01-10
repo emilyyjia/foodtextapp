@@ -12,7 +12,7 @@ def get_field(data, field):
         return data[field]
     else:
         raise KeyError(
-            "Error: No {} field provided. Please specify an id.".format(field))
+            "Error: No {} field provided. Please specify {}.".format(field, field))
 
 
 @app.route('/api/getfood', methods=['POST'])
@@ -22,11 +22,12 @@ def get_food():
     try:
         name = get_field(data, 'name')
         item_type = get_field(data, 'item_type')
+        city = get_field(data, 'city')
         phone_num = get_field(data, 'phone')
     except KeyError as ke:
         return str(ke)
 
-    if main.want_sign_up(item_type, name, phone_num):
+    if main.want_sign_up(item_type, city, name, phone_num):
         return "success"
     else:
         return "fail"
@@ -40,6 +41,7 @@ def share_food():
         name = get_field(data, 'name')
         item = get_field(data, 'item')
         item_type = get_field(data, 'item_type')
+        city = get_field(data, 'city')
         quantity = int(get_field(data, 'quantity'))
         location = get_field(data, 'location')
         time = get_field(data, 'time')
@@ -47,7 +49,7 @@ def share_food():
     except KeyError as ke:
         return str(ke)
 
-    if main.food_available(name, item, item_type, quantity, location, time, description):
+    if main.food_available(name, item, item_type, city, quantity, location, time, description):
         return "success"
     else:
         return "not everyone got the message"
