@@ -19,9 +19,10 @@ const StyledForm = styled(Form)`
     padding: 5%;
     width: 100%;
 `
+//font-family: "Roboto", sans-serif; 
 const StyledLabel = styled(Form.Label)`
     color: #6885EB; 
-    font-family: "Roboto", sans-serif; 
+    font-family: monospace;
     font-size: 22px;
     font-weight: normal;
     margin-top: 15px;
@@ -32,8 +33,9 @@ const Row = styled.div`
 const TopCommand = styled.div`
     color: #B4CDA1; 
     font-family: "Roboto", sans-serif; 
-    font-size: 30px;
+    font-size: 20px;
     font-weight: bolder;
+    letter-spacing: 1px;
     margin-bottom: 15px;
     text-align: center;
     width: 80%;
@@ -48,7 +50,7 @@ const Submit = styled.button`
     font-weight: bold;
     letter-spacing: 1px;
 
-    margin: 0; 
+    margin: 0 0 10px 0; 
     position: relative;
     top: 100%;
     left: 50%;
@@ -74,13 +76,23 @@ const Submit = styled.button`
         outline: none;
     }
 `
+
+const Option = styled.option`
+
+`
 const GiveFood = () => {
     const [description, setDescription] = useState("");
+    const [type, setType] = useState("");
+    const [time, setTime] = useState("");
+    const [location, setLocation] = useState("");
     const [isFormComplete, setFormComplete] = useState(false);
 
 
     const submitForm = () => {
         console.log(description);
+        console.log(type);
+        console.log(time);
+        console.log(location);
         // TODO: call API here
 
         setFormComplete(true);
@@ -93,7 +105,7 @@ const GiveFood = () => {
     return (
         <CenterContainer>
              <TopCommand>
-                Please enter your information below:
+                Please enter your information below
             </TopCommand>
             <Row>
                 <StyledForm> 
@@ -101,7 +113,13 @@ const GiveFood = () => {
                         <StyledLabel>
                             Item Type
                         </StyledLabel>
-                        <Form.Control as='select'></Form.Control>
+                        <Form.Control as='select' onChange={e => setType(e.target.value)} value={type}>
+                            <Option>Select</Option>
+                            <Option>Ready/Hot Food</Option>
+                            <Option>Storable Food</Option>
+                            <Option>Clothing</Option>
+                            <Option>Daily Use Items</Option>
+                        </Form.Control>
                     </Form.Group>
 
                     <Form.Group controlId="form.desc">
@@ -120,17 +138,17 @@ const GiveFood = () => {
 
                     <Form.Group controlId="form.date">
                         <StyledLabel>
-                            Pick-up Date and Time
+                            Pick-up Date &amp; Time
                         </StyledLabel>
                         <DateRangePicker initialSettings={{ startDate: '1/1/2021', endDate: '3/1/2021' }}>
-                            <Form.Control></Form.Control>
+                            <Form.Control onChange={e => setTime(e.target.value)} value={time}></Form.Control>
                         </DateRangePicker>
                     </Form.Group>
                     <Form.Group controlId="form.location">
                         <StyledLabel>
-                            Pick-up Location
+                            Address &amp; Postal Code
                         </StyledLabel>
-                        <Form.Control as='textarea'></Form.Control>
+                        <Form.Control as='textarea' onChange={e => setLocation(e.target.value)} value={location}></Form.Control>
                     </Form.Group>
                     <Submit type="submit" onClick={submitForm}>
                         Submit
