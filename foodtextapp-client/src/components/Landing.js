@@ -26,7 +26,8 @@ const Button = styled.button`
     font-size: 17px;
     font-weight: bold;
     letter-spacing: 1px;
-    margin: 4px 30px;    
+    margin: 4px 30px;  
+    overflow: hidden;  
     padding: 20px 50px;
 
     background-color: #FAF8F8;
@@ -34,6 +35,16 @@ const Button = styled.button`
     border-radius: 32px;
     color: #7987F5;
     filter: drop-shadow(5px 10px 4px rgba(104, 133, 235, 0.2));
+
+    &:hover{
+        background-color: #7987F5;
+        color: #FAF8F8;
+        transition: background 0.3s, color 0.25s;
+    }
+
+    &:focus{
+        outline: none;
+    }
 `
 
 const Landing = () => {

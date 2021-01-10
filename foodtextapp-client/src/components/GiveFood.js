@@ -13,33 +13,99 @@ const CenterContainer = styled.div`
 `;
 
 const StyledForm = styled(Form)`
-    width: 60%;
+    width: 100%;
 `
 const StyledLabel = styled(Form.Label)`
-
+    color: #6885EB; 
+    font-family: "Roboto", sans-serif; 
+    font-size: 22px;
+    font-weight: normal;
+    margin-top: 15px;
+`
+const Row = styled.div`
+    width: 45%; 
+`
+const TopCommand = styled.div`
+    color: #B4CDA1; 
+    font-family: "Roboto", sans-serif; 
+    font-size: 30px;
+    font-weight: bolder;
+    margin-bottom: 15px;
+    text-align: center;
+    width: 80%;
 `
 
+const Submit = styled.button`
+    border: 0px;
+    border-radius: 20px;
+    display: inline-block;
+    font-family: "Roboto", sans-serif; 
+    font-size: 17px;
+    font-weight: bold;
+    letter-spacing: 1px;
+
+    margin: 0; 
+    position: relative;
+    top: 100%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, 0%);
+
+    overflow: hidden;  
+    padding: 20px 50px;
+
+    background-color: #FAF8F8;
+    box-shadow: 0px 4px 0px #FFE395;
+    border-radius: 32px;
+    color: #7987F5;
+    filter: drop-shadow(5px 10px 4px rgba(104, 133, 235, 0.2));
+
+    &:hover{
+        background-color: #7987F5;
+        color: #FAF8F8;
+        transition: background 0.3s, color 0.25s;
+    }
+
+    &:focus{
+        outline: none;
+    }
+`
 const GiveFood = () => {
     return (
         <CenterContainer>
+             <TopCommand>
+                Please enter your information below:
+            </TopCommand>
+            <Row>
                 <StyledForm>
-                    <Form.Group controlId="form.desc">
-                        <StyledLabel>
-                            Item Description
-                        </StyledLabel>
-                        <Form.Control as='textarea'></Form.Control>
-                    </Form.Group>
                     <Form.Group controlId="form.type">
                         <StyledLabel>
                             Item Type
                         </StyledLabel>
                         <Form.Control as='select'></Form.Control>
                     </Form.Group>
+
+                    <Form.Group controlId="form.desc">
+                        <StyledLabel>
+                            Item Description
+                        </StyledLabel>
+                        <Form.Control as='textarea'></Form.Control>
+                    </Form.Group>
+                    
                     <Form.Group controlId="form.quantity">
                         <StyledLabel>
                             Item Quantity
                         </StyledLabel>
                         <Form.Control></Form.Control>
+                    </Form.Group>
+
+                    <Form.Group controlId="form.date">
+                        <StyledLabel>
+                            Pick-up Date and Time
+                        </StyledLabel>
+                        <DateRangePicker initialSettings={{ startDate: '1/1/2021', endDate: '3/1/2021' }}>
+                            <Form.Control></Form.Control>
+                        </DateRangePicker>
                     </Form.Group>
                     <Form.Group controlId="form.location">
                         <StyledLabel>
@@ -47,15 +113,11 @@ const GiveFood = () => {
                         </StyledLabel>
                         <Form.Control as='textarea'></Form.Control>
                     </Form.Group>
-                    <Form.Group controlId="form.date">
-                        <StyledLabel>
-                            Pick-up Date and Time
-                        </StyledLabel>
-                        <DateRangePicker initialSettings={{ startDate: '1/1/2014', endDate: '3/1/2014' }}>
-                            <Form.Control></Form.Control>
-                        </DateRangePicker>
-                    </Form.Group>
+                    <Submit>
+                        Submit
+                    </Submit>
                 </StyledForm>
+            </Row>
         </CenterContainer>
     );
   };
