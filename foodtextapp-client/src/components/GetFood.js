@@ -1,10 +1,7 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
 import { Redirect } from 'react-router-dom';
-
-
 
 const CenterContainer = styled.div`
     align-items: center;
@@ -12,13 +9,14 @@ const CenterContainer = styled.div`
     flex-direction: column;
     justify-content: center;
 `;
+
 const StyledForm = styled(Form)`
     background-color: rgba(255, 255, 255, 0.6);
     border-radius: 20px;
     padding: 5%;
     width: 100%;
 `;
-//font-family: "Roboto", sans-serif; 
+
 const StyledLabel = styled(Form.Label)`
     color: #6885EB; 
     font-family: monospace;
@@ -26,9 +24,11 @@ const StyledLabel = styled(Form.Label)`
     font-weight: normal;
     margin-top: 15px;
 `;
+
 const Row = styled.div`
     width: 45%; 
 `;
+
 const TopCommand = styled.div`
     color: #B4CDA1; 
     font-family: "Roboto", sans-serif; 
@@ -76,6 +76,9 @@ const Submit = styled.button`
     }
 `;
 
+const Option = styled.option`
+`
+
 const Warn = styled(Form.Text)`
     color: #FF8B8B;
 `
@@ -84,40 +87,55 @@ const GetFood = () => {
     const [name, setName] = useState("");
     const [phoneNumber, setphoneNumber] = useState("");
     const [location, setLocation] = useState("");
+    const [itemType, setItemType] = useState("");
 
     const [isFormComplete, setFormComplete] = useState(false);
     const [triedSubmitting, setTriedSubmitting] = useState(false);
-    const [isPhoneNumberGood, setPhoneNumber] = useState(true);
 
     const hasEmptyField = () => {
-        return name === "" || phoneNumber === "" || location === "";
+        return itemType === "" || itemType === "Select" || name === "" || phoneNumber === "" || location === "";
     }
 
     const badPhoneNumber = () => {
-        return phoneNumber === "" || phoneNumber.length != 10 || isNaN(phoneNumber);
+        let numWithoutAreaCode = phoneNumber.substring(2);
+        if (numWithoutAreaCode === "") {
+            return true;
+        }
+
+        return phoneNumber === "" || phoneNumber.length !== 12 || isNaN(parseInt(numWithoutAreaCode));
     }
 
-    const createGetFoodUser = (event) => {
-        if (hasEmptyField()) {
+    const createGetFoodUser = async (event) => {
+        if (hasEmptyField() || badPhoneNumber()) {
             event.preventDefault();
             event.stopPropagation();
             setFormComplete(false);
             setTriedSubmitting(true);
-            setPhoneNumber(true);
             return;
         }
-        if(badPhoneNumber()){
-            event.preventDefault();
-            event.stopPropagation();
-            setPhoneNumber(false);
-            setFormComplete(false);
-            setTriedSubmitting(true);
-            return;
+        
+        const apiUrl = process.env.REACT_APP_API_URL;
+
+        const data = {
+            name: name,
+            item_type: itemType,
+            city: location, // TODO make neighbourhood
+            phone: phoneNumber,
         }
-        console.log(name);
-        console.log(phoneNumber);
-        console.log(location);
-        // TODO: call API here
+
+        let formData = new FormData();
+        for (const key in data) {
+            formData.append(key, data[key]);
+        }
+
+        fetch(`${apiUrl}/getfood` , {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: formData
+        });
 
         setFormComplete(true);
     }
@@ -138,6 +156,25 @@ const GetFood = () => {
                             One or more fields are empty.
                         </Warn>
                     }
+                    <Form.Group controlId="form.type">
+                        <StyledLabel>
+                            Item Type
+                        </StyledLabel>
+                        <Form.Control as='select' onChange={e => setItemType(e.target.value)} required value={itemType}>
+                            <Option>Select</Option>
+                            <Option>Ready/Hot Food</Option>
+                            <Option>Storable Food</Option>
+                            <Option>Clothing</Option>
+                            <Option>Daily Use Items</Option>
+                        </Form.Control>
+                        {(itemType === "" || itemType === "Select") &&
+                            <Warn>
+                                Please select the type of item.
+                            </Warn>
+                        }
+                        
+                    </Form.Group>
+
                     <Form.Group controlId="form.desc">
                         <StyledLabel>
                             First &amp; Last Name
@@ -150,9 +187,9 @@ const GetFood = () => {
                             Phone Number
                         </StyledLabel>
                         <Form.Control onChange={e => setphoneNumber(e.target.value)} value={phoneNumber}></Form.Control>
-                        {isPhoneNumberGood === false &&
+                        {badPhoneNumber() &&
                             <Warn>
-                                Please enter your 10-digit phone number with only numbers.
+                                Please enter +1 followed by a 10-digit phone number using only numbers.
                             </Warn>
                         }
                     </Form.Group>
