@@ -1,2 +1,4 @@
 twilio.env
+firestore.env
+google_creds.json
 __pycache__
