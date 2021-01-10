@@ -13,6 +13,8 @@ from twilio.rest import Client
 #         self.item_type = item_type
 #         self.phone = phone
 
+account_sid = os.environ['TWILIO_ACCOUNT_SID']
+auth_token = os.environ['TWILIO_AUTH_TOKEN']
 everyone = {} # key: item_type, value: array of phone numbers 
 
 def want_sign_up(item_type, phone):
@@ -23,21 +25,21 @@ def want_sign_up(item_type, phone):
     else:
         everyone[item_type] = [phone]
 
-def food_availible(item, item_type, quantity, location, time):
+def food_available(item, item_type, quantity, location, time):
     if item_type in everyone:
         for phone in everyone[item_type]:
-            send_text(item + ", " + location + ", "+ time, phone)
+            text = "There are {0} {1} available at {2} at {3}".format(quantity, item, location, time)
+            print(text)
+            send_text(text, phone)
     
 
 def send_text(text, phone):
-    account_sid = os.environ['TWILIO_ACCOUNT_SID']
-    auth_token = os.environ['TWILIO_AUTH_TOKEN']
     client = Client(account_sid, auth_token)
 
     message = client.messages \
                     .create(
                          body=text,
-                         from_='input phone number here', #change this to purchased number
+                         from_='+16043322049', #change this to purchased number
                          to=phone
                      )
 
@@ -69,6 +71,9 @@ def send_text(text, phone):
 ##    }
     return None
 
+if __name__ == "__main__":
+    want_sign_up("veggies", "+17787082738")
+    food_available("potatoes", "veggies", 3, "the pool", "2pm")
 
 #class Supplier(object):
 #   def __init__(self, item, item_type, location):
