@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker'; // TODO: fix styling for picker
 import Form from 'react-bootstrap/Form';
+import Col from 'react-bootstrap/Col';
 import { Redirect } from 'react-router-dom';
 
 const CenterContainer = styled.div`
@@ -18,7 +19,7 @@ const StyledForm = styled(Form)`
     padding: 5%;
     width: 100%;
 `;
-//font-family: "Roboto", sans-serif; 
+
 const StyledLabel = styled(Form.Label)`
     color: #6885EB; 
     font-family: monospace;
@@ -26,9 +27,11 @@ const StyledLabel = styled(Form.Label)`
     font-weight: normal;
     margin-top: 15px;
 `;
+
 const Row = styled.div`
     width: 45%; 
 `;
+
 const TopCommand = styled.div`
     color: #B4CDA1; 
     font-family: "Roboto", sans-serif; 
@@ -77,7 +80,6 @@ const Submit = styled.button`
 `;
 
 const Option = styled.option`
-
 `
 
 const Warn = styled(Form.Text)`
@@ -85,17 +87,20 @@ const Warn = styled(Form.Text)`
 `
 
 const GiveFood = () => {
+    const [name, setName] = useState("");
+    const [item, setItem] = useState("");
     const [itemType, setItemType] = useState("");
-    const [description, setDescription] = useState("");
     const [quantity, setQuantity] = useState(0);
     const [time, setTime] = useState("");
     const [location, setLocation] = useState("");
+    const [description, setDescription] = useState("");
 
     const [isFormComplete, setFormComplete] = useState(false);
     const [triedSubmitting, setTriedSubmitting] = useState(false);
 
     const hasEmptyField = () => {
-        return itemType === "" || itemType === "Select" || description === "" || time === "" || location === "";
+        return itemType === "" || itemType === "Select" || description === "" || time === "" || location === "" 
+        || name ==="" || item === "" || location === "Select" || location === "";
     }
 
     const submitForm = async (event) => {
@@ -111,12 +116,12 @@ const GiveFood = () => {
         console.log(apiUrl);
 
         const data = {
-            name: '', // TODO add
-            item: '', // TODO add
+            name: name, 
+            item: item, 
             item_type: itemType,
             quantity: quantity, 
-            location: location, // TODO make neighbourhood
             time: time,
+            location: location, 
             description: description,
         }
 
@@ -157,6 +162,31 @@ const GiveFood = () => {
                             One or more fields are empty.
                         </Warn>
                     }
+
+                    <Form.Row>
+                    <Col>
+                    <Form.Group controlId="form.desc" >
+                        <StyledLabel>
+                           Name
+                        </StyledLabel>
+                        <Form.Control placeholder="your/company" onChange={e => setName(e.target.value)} value={name}></Form.Control>
+                    </Form.Group>
+                    </Col>
+
+                    <Col>
+                    <Form.Group controlId="form.desc" >
+                        <StyledLabel>
+                            Item Name
+                        </StyledLabel>
+                        <Form.Control onChange={e => setItem(e.target.value)} value={item}></Form.Control>
+                    </Form.Group>
+
+                    </Col>
+                    </Form.Row>
+
+                    <Form.Row>
+
+                    <Col>
                     <Form.Group controlId="form.type">
                         <StyledLabel>
                             Item Type
@@ -173,22 +203,20 @@ const GiveFood = () => {
                                 Please select the type of item.
                             </Warn>
                         }
-                        
                     </Form.Group>
+                    </Col>
 
-                    <Form.Group controlId="form.desc">
-                        <StyledLabel>
-                            Item Description
-                        </StyledLabel>
-                        <Form.Control as='textarea' onChange={e => setDescription(e.target.value)} value={description}></Form.Control>
-                    </Form.Group>
-                    
+
+                    <Col>
                     <Form.Group controlId="form.quantity">
                         <StyledLabel>
                             Item Quantity
                         </StyledLabel>
-                        <Form.Control onChange={e => setQuantity(e.target.value)} type="number" value={quantity}></Form.Control>
+                        <Form.Control onChange={e => setQuantity(e.target.value)} type="number" min="0" value={quantity}></Form.Control>
                     </Form.Group>
+                    </Col>
+
+                    </Form.Row>
 
                     <Form.Group controlId="form.date">
                         <StyledLabel>
@@ -201,15 +229,46 @@ const GiveFood = () => {
                             value={time}
                         />
                     </Form.Group>
-                    <Form.Group controlId="form.location">
+
+                    <Form.Group controlId="form.type">
                         <StyledLabel>
-                            Address &amp; Postal Code
+                            Location
                         </StyledLabel>
-                        <Form.Control as='textarea' onChange={e => setLocation(e.target.value)} value={location}></Form.Control>
+                        <Form.Control as='select' onChange={e => setLocation(e.target.value)} required value={location}>
+                            <Option>Select</Option>
+                            <Option>Cambie Village</Option>
+                            <Option>Chinatown/Downtown EastSide</Option>
+                            <Option>Downtown Vancouver</Option>
+                            <Option>Grandview-Woodland</Option>
+                            <Option>Granville Island</Option>
+                            <Option>Kerrisdale</Option>
+                            <Option>Kitsilano</Option>
+                            <Option>Marpole</Option>
+                            <Option>Mount Pleasant</Option>
+                            <Option>South Granville</Option>
+                            <Option>Strathcona</Option>
+                            <Option>UBC</Option>
+                            <Option>West End</Option>
+                        </Form.Control>
+                        {(itemType === "" || itemType === "Select") &&
+                            <Warn>
+                                Please select a location.
+                            </Warn>
+                        }
                     </Form.Group>
+
+
+                    <Form.Group controlId="form.desc">
+                        <StyledLabel>
+                            Description
+                        </StyledLabel>
+                        <Form.Control placeholder="Tell us more or share a message" as='textarea' onChange={e => setDescription(e.target.value)} value={description}></Form.Control>
+                    </Form.Group>
+
                     <Submit onClick={submitForm} type="submit">
                         Submit
                     </Submit>
+                    
                 </StyledForm>
             </Row>
         </CenterContainer>
