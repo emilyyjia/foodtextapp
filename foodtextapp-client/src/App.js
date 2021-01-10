@@ -1,4 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-daterangepicker/daterangepicker.css';
 import React from 'react';
 
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
