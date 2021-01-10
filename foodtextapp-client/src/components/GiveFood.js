@@ -25,7 +25,7 @@ const StyledLabel = styled(Form.Label)`
     font-family: monospace;
     font-size: 22px;
     font-weight: normal;
-    margin-top: 15px;
+    margin-top: 3px;
 `;
 
 const Row = styled.div`
@@ -92,6 +92,7 @@ const GiveFood = () => {
     const [itemType, setItemType] = useState("");
     const [quantity, setQuantity] = useState(0);
     const [time, setTime] = useState("");
+    const [neighbourhood, setNeighbourhood] = useState("");
     const [location, setLocation] = useState("");
     const [description, setDescription] = useState("");
 
@@ -99,8 +100,8 @@ const GiveFood = () => {
     const [triedSubmitting, setTriedSubmitting] = useState(false);
 
     const hasEmptyField = () => {
-        return itemType === "" || itemType === "Select" || description === "" || time === "" || location === "" 
-        || name ==="" || item === "" || location === "Select" || location === "";
+        return itemType === "" || itemType === "Select" || description === "" || time === "" || neighbourhood === "" 
+        || name ==="" || item === "" || neighbourhood === "Select" || neighbourhood === "";
     }
 
     const submitForm = async (event) => {
@@ -111,17 +112,17 @@ const GiveFood = () => {
             setTriedSubmitting(true);
             return;
         }
-        // TODO: clean this up
+
         const apiUrl = process.env.REACT_APP_API_URL;
-        console.log(apiUrl);
 
         const data = {
             name: name, 
             item: item, 
             item_type: itemType,
-            quantity: quantity, 
+            city: neighbourhood, 
+            quantity: quantity,
+            location: location,
             time: time,
-            location: location, 
             description: description,
         }
 
@@ -132,7 +133,7 @@ const GiveFood = () => {
         }
         console.log(data);
         console.log(formData);
-        fetch(`${apiUrl}/sharefood` , {
+        let response = await fetch(`${apiUrl}/sharefood` , {
             method: 'POST',
             mode: 'no-cors',
             headers: {
@@ -140,10 +141,11 @@ const GiveFood = () => {
             },
             body: formData
         });
+        console.log(response);
         event.preventDefault();
         event.stopPropagation();
 
-        setFormComplete(true);
+        // setFormComplete(true);
     }
 
     if (isFormComplete) {
@@ -229,12 +231,12 @@ const GiveFood = () => {
                             value={time}
                         />
                     </Form.Group>
-
-                    <Form.Group controlId="form.type">
+                    
+                    <Form.Group controlId="form.neighbourhood">
                         <StyledLabel>
-                            Location
+                            Neighbourhood
                         </StyledLabel>
-                        <Form.Control as='select' onChange={e => setLocation(e.target.value)} required value={location}>
+                        <Form.Control as='select' onChange={e => setNeighbourhood(e.target.value)} required value={neighbourhood}>
                             <Option>Select</Option>
                             <Option>Cambie Village</Option>
                             <Option>Chinatown/Downtown EastSide</Option>
@@ -257,6 +259,12 @@ const GiveFood = () => {
                         }
                     </Form.Group>
 
+                    <Form.Group controlId="form.location">
+                        <StyledLabel>
+                            Address
+                        </StyledLabel>
+                        <Form.Control onChange={e => setLocation(e.target.value)} placeholder="The exact address for pickup" value={location}></Form.Control>
+                    </Form.Group>
 
                     <Form.Group controlId="form.desc">
                         <StyledLabel>
