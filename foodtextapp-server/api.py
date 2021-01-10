@@ -22,7 +22,7 @@ def get_food():
     try:
         name = get_field(data, 'name')
         item_type = get_field(data, 'item_type')
-        city = get_field(data, 'city')
+        city = get_field(data, 'neighbourhood')
         phone_num = get_field(data, 'phone')
     except KeyError as ke:
         return str(ke)
